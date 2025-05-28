@@ -18,9 +18,9 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env.local")
 
 livekit_api = api.LiveKitAPI(
-    url=os.getenv("LIVEKIT_URL"),
-    api_key=os.getenv("LIVEKIT_API_KEY"),
-    api_secret=os.getenv("LIVEKIT_API_SECRET")
+    url="wss://novasonicproject-tyekli2v.livekit.cloud",
+    api_key="APIXzgZBNV6bsEo",
+    api_secret="81xKfDUGgUcwoesgXOI3fuiRpvEqP3KODwiRmy9GyOgB"
 )
 
 app = FastAPI()
@@ -220,4 +220,4 @@ async def create_inbound_dispatch_rule(dispatch_request: CreateInboundDispatchRe
         )
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="34.238.169.185", port=8765)
+    uvicorn.run(app, host="0.0.0.0", port=8765)
