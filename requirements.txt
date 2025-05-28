@@ -1,0 +1,17 @@
+pyaudio>=0.2.13
+rx>=3.2.0
+smithy-aws-core>=0.0.1
+pytz
+aws_sdk_bedrock_runtime
+
+livekit==0.20.4
+livekit-agents[codecs]==0.12.17
+livekit-plugins-aws==0.1.1
+livekit-plugins-google==0.11.3
+livekit-plugins-silero==0.7.4
+livekit-plugins-turn-detector==0.4.3
+python-dotenv==1.0.1
+google-cloud-texttospeech==2.25.0
+fastapi==0.115.11
+uvicorn==0.34.0
+aws_sdk_bedrock_runtime==0.0.1
