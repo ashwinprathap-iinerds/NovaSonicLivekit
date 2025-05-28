@@ -220,4 +220,4 @@ async def create_inbound_dispatch_rule(dispatch_request: CreateInboundDispatchRe
         )
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8765)
+    uvicorn.run(app, host="34.238.169.185", port=8765)
