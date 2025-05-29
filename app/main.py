@@ -18,9 +18,9 @@ from dotenv import load_dotenv
 load_dotenv(dotenv_path=".env.local")
 
 livekit_api = api.LiveKitAPI(
-    url="wss://novasonicproject-tyekli2v.livekit.cloud",
-    api_key="APIXzgZBNV6bsEo",
-    api_secret="81xKfDUGgUcwoesgXOI3fuiRpvEqP3KODwiRmy9GyOgB"
+    url=os.getenv("LIVEKIT_URL"),
+    api_key=os.getenv("LIVEKIT_API_KEY"),
+    api_secret=os.getenv("LIVEKIT_API_SECRET")
 )
 
 app = FastAPI()
