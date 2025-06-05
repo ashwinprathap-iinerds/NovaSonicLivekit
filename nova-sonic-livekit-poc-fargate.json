@@ -1,0 +1,39 @@
+{
+    "executionRoleArn": "arn:aws:iam::901307864240:role/ecsTaskExecutionRole",
+    "containerDefinitions": [
+      {
+        "logConfiguration": {
+          "logDriver": "awslogs",
+          "options": {
+            "awslogs-group": "/ecs/nova-sonic-livekit-poc",
+            "awslogs-region": "us-east-1",
+            "awslogs-stream-prefix": "ecs"
+          }
+        },
+        "portMappings": [
+          {
+            "hostPort": 3000,
+            "protocol": "tcp",
+            "containerPort": 3000
+          },
+          {
+            "hostPort": 3030,
+            "protocol": "tcp",
+            "containerPort": 3030
+          }
+        ],
+        "image": "901307864240.dkr.ecr.us-west-2.amazonaws.com/nova-sonic-livekit-poc:latest",
+        "name": "nova-sonic-livekit-poc"
+      }
+    ],
+    "memory": "2048",
+    "taskRoleArn": "arn:aws:iam::901307864240:role/ecsTaskExecutionRole",
+    "family": "nova-sonic-livekit-poc",
+    "requiresCompatibilities": [
+      "FARGATE"
+    ],
+    "networkMode": "awsvpc",
+    "cpu": "1024",
+    "volumes": []
+  }
+  
