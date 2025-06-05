@@ -1,0 +1,65 @@
+name: Build Livekit-POC
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  
+env:
+  AWS_REGION: us-east-1                             # set this to your preferred AWS region, e.g. us-west-1
+  ECR_REPOSITORY: nova-sonic-livekit-poc                 # set this to your Amazon ECR repository name
+  ECS_SERVICE: nova-sonic-livekit-poc                  # set this to your Amazon ECS service name
+  ECS_CLUSTER: livekit-poc                               # set this to your Amazon ECS cluster name
+  ECS_TASK_DEFINITION: ./nova-sonic-livekit-poc-fargate.json # set this to the path to your Amazon ECS task definition ile, e.g. .aws/task-definition.json
+  ECS_CONTAINER_NAME: nova-sonic-livekit-poc           # set this to the name of the container in the containerDefinitions section of your task definition
+
+jobs:
+  Build-Deploy:
+    runs-on: ubuntu-latest
+        
+    steps:
+    - uses: actions/checkout@v3
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        aws-access-key-id: ${{ secrets.AWS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_KEY }}
+        aws-region: us-east-1
+    - name: Retrieve environment variables from Parameter Store
+      id: get-parameters
+      run: |
+        aws ssm get-parameter --name "nova-sonic-livekit-poc" --with-decryption --query "Parameter.Value" --output text > main.env
+        cat main.env
+    - name: Login to Amazon ECR
+      id: login-ecr
+      uses: aws-actions/amazon-ecr-login@v2
+
+    - name: Build, tag, and push image to Amazon ECR
+      id: build-image
+      env:
+        ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+        IMAGE_TAG: ${{ github.sha }}
+      run: |
+        # Build a docker container and
+        # push it to ECR so that it can
+        # be deployed to ECS.
+        docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+        echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+    - name: Fill in the new image ID in the Amazon ECS task definition
+      id: task-def
+      uses: aws-actions/amazon-ecs-render-task-definition@v1
+      with:
+        task-definition: ${{ env.ECS_TASK_DEFINITION }}
+        container-name: ${{ env.ECS_CONTAINER_NAME }}
+        image: ${{ steps.build-image.outputs.image }}
+
+  
+    - name: Deploy Amazon ECS task definition
+      uses: aws-actions/amazon-ecs-deploy-task-definition@v2
+      with:
+        task-definition: ${{ steps.task-def.outputs.task-definition }}
+        service: ${{ env.ECS_SERVICE }}
+        cluster: ${{ env.ECS_CLUSTER }}
+        wait-for-service-stability: false
